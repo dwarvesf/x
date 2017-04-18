@@ -24,6 +24,7 @@ func (m *Mailgun) Send(message *emailer.Message) error {
 	if err != nil {
 		return err
 	}
+	req.Header.Add("Content-Type", "multipart/form-data")
 
 	req.SetBasicAuth("api", m.PrivateKey)
 

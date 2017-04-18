@@ -1,4 +1,4 @@
-package emailer
+package notifier
 
 import (
 	"fmt"
@@ -32,7 +32,6 @@ type Message struct {
 	From    string `json:"from"`
 	Subject string `json:"subject"`
 	Text    string `json:"text"`
-	HTML    string `json:"html"`
 }
 
 // Register ...
