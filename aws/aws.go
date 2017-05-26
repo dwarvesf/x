@@ -20,14 +20,21 @@ var (
 	region     string
 )
 
-func NewS3(bname, re string) error {
-	bucketName = bname
-	region = re
+func init() {
+	if os.Getenv("AWS_BUCKET_NAME") == "" {
+		panic("AWS_BUCKET_NAME is missing?")
+	}
+	if os.Getenv("AWS_REGION") == "" {
+		panic("AWS_REGION is missing?")
+	}
+
+	bucketName = os.Getenv("AWS_BUCKET_NAME")
+	region = os.Getenv("AWS_REGION")
 
 	creds := credentials.NewEnvCredentials()
 	_, err := creds.Get()
 	if err != nil {
-		return err
+		panic("failed to get env credentials")
 	}
 
 	config := &aws.Config{
@@ -38,16 +45,14 @@ func NewS3(bname, re string) error {
 
 	sess, err := session.NewSession(config)
 	if err != nil {
-		fmt.Println("failed to create session")
-		return err
+		panic("failed to create session")
 	}
 
 	S3Client = s3.New(sess)
-
-	return nil
 }
 
 func UploadToS3(filePath string, key string) error {
+
 	file, err := os.Open(filePath)
 	if err != nil {
 		return err
@@ -98,11 +103,19 @@ func UploadToS3ByMultiPart(file multipart.File, fileName string) error {
 		return err
 	}
 
+	return uploadWithBytes(bs, fileName)
+}
+
+func UploadToS3WithBytes(bytes []byte, fileName string) error {
+	return uploadWithBytes(bytes, fileName)
+}
+
+func uploadWithBytes(bs []byte, fileName string) error {
 	params := &s3.PutObjectInput{
 		Bucket:        aws.String(bucketName), // required
 		Key:           aws.String(fileName),   // required
 		ACL:           aws.String("public-read"),
-		Body:          file,
+		Body:          bytes.NewReader(bs),
 		ContentLength: aws.Int64(int64(len(bs))),
 		ContentType:   aws.String("application/octet-stream"),
 		Metadata: map[string]*string{
@@ -111,7 +124,7 @@ func UploadToS3ByMultiPart(file multipart.File, fileName string) error {
 		// see more at http://godoc.org/github.com/aws/aws-sdk-go/service/s3#S3.PutObject
 	}
 
-	_, err = S3Client.PutObject(params)
+	_, err := S3Client.PutObject(params)
 	if err != nil {
 		return err
 	}
@@ -126,6 +139,9 @@ func DeleteFromS3(key string) error {
 		Key:    aws.String(key),        // Required
 	}
 	_, err := S3Client.DeleteObject(params)
+	if err != nil {
+		return err
+	}
 
-	return err
+	return nil
 }
