@@ -20,9 +20,9 @@ var (
 	region     string
 )
 
-func NewS3(bucketName, region string) error {
-	bucketName = bucketName
-	region = region
+func NewS3(bname, re string) error {
+	bucketName = bname
+	region = re
 
 	creds := credentials.NewEnvCredentials()
 	_, err := creds.Get()
@@ -48,7 +48,6 @@ func NewS3(bucketName, region string) error {
 }
 
 func UploadToS3(filePath string, key string) error {
-
 	file, err := os.Open(filePath)
 	if err != nil {
 		return err
