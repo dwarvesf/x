@@ -42,6 +42,7 @@ type Body struct {
 	Contents         []Content         `json:"content"`
 }
 
+// Send sends the email with format
 func (s *Sendgrid) Send(message *emailer.Message) error {
 
 	var body = &Body{

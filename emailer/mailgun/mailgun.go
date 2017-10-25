@@ -18,6 +18,7 @@ type Mailgun struct {
 	PrivateKey string
 }
 
+// Send sends the email with format
 func (m *Mailgun) Send(message *emailer.Message) error {
 	req, err := http.NewRequest("POST", fmt.Sprintf(MailgunEndpoint, m.Domain), nil)
 	req.Form = url.Values{"to": {message.To}, "from": {message.From}, "subject": {message.Subject}, "text": {message.Text}}

@@ -38,6 +38,7 @@ type To struct {
 	Type string `json:"type,omitempty"`
 }
 
+// Send sends the email with format
 func (m *Mandrill) Send(message *emailer.Message) error {
 	type Body struct {
 		Key     string  `json:"key"`
