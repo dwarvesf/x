@@ -51,6 +51,7 @@ func init() {
 	S3Client = s3.New(sess)
 }
 
+// UploadToS3 sends the image from path to s3
 func UploadToS3(filePath string, key string) error {
 
 	file, err := os.Open(filePath)
@@ -96,6 +97,7 @@ func UploadToS3(filePath string, key string) error {
 
 }
 
+// UploadToS3ByMultiPart sends the image as multiple part to s3
 func UploadToS3ByMultiPart(file multipart.File, fileName string) error {
 
 	bs, err := ioutil.ReadAll(file)
@@ -106,6 +108,7 @@ func UploadToS3ByMultiPart(file multipart.File, fileName string) error {
 	return uploadWithBytes(bs, fileName)
 }
 
+// UploadToS3WithBytes sends the image as bytes to s3
 func UploadToS3WithBytes(bytes []byte, fileName string) error {
 	return uploadWithBytes(bytes, fileName)
 }
@@ -132,6 +135,7 @@ func uploadWithBytes(bs []byte, fileName string) error {
 	return nil
 }
 
+// DeleteFromS3 remove the key from s3
 func DeleteFromS3(key string) error {
 
 	params := &s3.DeleteObjectInput{
